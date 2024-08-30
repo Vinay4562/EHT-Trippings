@@ -183,52 +183,51 @@
             };
 
             async function fetchSubstationName() {
-        try {
-            const response = await fetch('/current-substation', {
-                headers: {
-                    'Authorization': 'Bearer YOUR_TOKEN' // Replace with your actual token
+                try {
+                    const response = await fetch('/current-substation', {
+                        headers: {
+                            'Authorization': 'chantichanti2255' // Replace with your actual token
+                        }
+                    });
+
+                    console.log('Status:', response.status);
+                    console.log('Headers:', [...response.headers.entries()]);
+
+                    const result = await response.text();
+                    let responseData = {};
+
+                    try {
+                        responseData = JSON.parse(result);
+                    } catch (e) {
+                        console.error('Failed to parse JSON:', e);
+                    }
+
+                    if (response.ok) {
+                        if (responseData.substation) {
+                            substationSelect.value = responseData.substation;
+                            populateFeederDropdown(responseData.substation, data);
+                        }
+                    } else {
+                        console.error('Failed to fetch substation name:', responseData);
+                    }
+                } catch (error) {
+                    console.error('Error fetching substation name:', error);
                 }
-            });
-
-            console.log('Status:', response.status);
-            console.log('Headers:', [...response.headers.entries()]);
-
-            const result = await response.text();
-            let responseData = {};
-
-            try {
-                responseData = JSON.parse(result);
-            } catch (e) {
-                console.error('Failed to parse JSON:', e);
             }
 
-            if (response.ok) {
-                if (responseData.substation) {
-                    substationSelect.value = responseData.substation;
-                    populateFeederDropdown(responseData.substation, data);
+            function populateFeederDropdown(substation, feederData) {
+                feederSelect.innerHTML = '<option value="">Select Feeder</option>';
+                if (feederData[substation]) {
+                    feederData[substation].forEach(feeder => {
+                        let option = document.createElement('option');
+                        option.value = feeder;
+                        option.textContent = feeder;
+                        feederSelect.appendChild(option);
+                    });
                 }
-            } else {
-                console.error('Failed to fetch substation name:', responseData);
             }
-        } catch (error) {
-            console.error('Error fetching substation name:', error);
-        }
-    }
 
-    function populateFeederDropdown(substation, feederData) {
-        feederSelect.innerHTML = '<option value="">Select Feeder</option>';
-        if (feederData[substation]) {
-            feederData[substation].forEach(feeder => {
-                let option = document.createElement('option');
-                option.value = feeder;
-                option.textContent = feeder;
-                feederSelect.appendChild(option);
-            });
-        }
-    }
-
-    fetchSubstationName();
-
+            fetchSubstationName();
 
             // Handle form submission (for both add and edit)
             form.addEventListener('submit', async function(event) {
@@ -513,29 +512,29 @@
 
         document.addEventListener('DOMContentLoaded', checkAuthentication);
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const logoutButton = document.getElementById('logout-btn');
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutButton = document.getElementById('logout-btn');
 
-        logoutButton.addEventListener('click', async function() {
-            try {
-                const response = await fetch('/logout', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
+            logoutButton.addEventListener('click', async function() {
+                try {
+                    const response = await fetch('/logout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
 
-                if (response.ok) {
-                    alert('You have been logged out successfully.');
-                    window.location.href = '/login.html'; // Redirect to login page or home page
-                } else {
-                    console.error('Logout failed:', await response.text());
-                    alert('Logout failed. Please try again.');
+                    if (response.ok) {  
+                        alert('You have been logged out successfully.');
+                        window.location.href = '/login.html'; // Redirect to login page or home page
+                    } else {
+                        console.error('Logout failed:', await response.text());
+                        alert('Logout failed. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error during logout:', error);
+                    alert('An error occurred during logout. Please try again.');
                 }
-            } catch (error) {
-                console.error('Error during logout:', error);
-                alert('An error occurred during logout. Please try again.');
-            }
+            });
         });
-    });
     </script>
 </body>
 </html>
