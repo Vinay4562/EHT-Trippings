@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
+const path = require('path');
 require('dotenv').config(); // Load environment variables
 
 const app = express();
@@ -37,7 +38,7 @@ app.use(express.static('public'));
 
 // Session configuration
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'chantichanti225', // Use environment variable or default secret
+    secret: process.env.SESSION_SECRET || 'chantichanti2255', // Use environment variable or default secret
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false } // Set to true if using HTTPS
@@ -86,14 +87,14 @@ function ensureAuthenticated(req, res, next) {
     if (req.session.authenticated) {
         return next(); // User is authenticated, proceed to the requested route
     }
-    res.redirect('/login.html'); // User is not authenticated, redirect to login page
+    res.redirect('/trippings.html'); // User is not authenticated, redirect to login page
 }
 
 // Apply middleware to protected routes
 app.use('/protected', ensureAuthenticated);
 
-app.get('/index.html', ensureAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get('/trippings.html', ensureAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'trippings.html'));
 });
 
 app.use((req, res, next) => {
@@ -117,7 +118,7 @@ app.post('/login', (req, res) => {
     if (authenticatedSubstation) {
         req.session.authenticated = true;
         req.session.substationName = authenticatedSubstation;
-        res.redirect('/index.html');
+        res.redirect('/trippings.html');
     } else {
         res.status(401).send('Unauthorized');
     }
