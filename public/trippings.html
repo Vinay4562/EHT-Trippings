@@ -492,23 +492,7 @@
             }
         });
 
-        async function checkAuthentication() {
-            try {
-                const response = await fetch('/current-substation', {
-                    method: 'GET',
-                    credentials: 'include' // Include cookies for session management
-                });
 
-                if (response.status === 401) {
-                    window.location.href = '/login.html'; // Redirect to login if not authenticated
-                }
-            } catch (error) {
-                console.error('Error checking authentication:', error);
-                window.location.href = '/login.html'; // Redirect on error
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', checkAuthentication);
 
     document.addEventListener('DOMContentLoaded', function() {
         const logoutButton = document.getElementById('logout-btn');
