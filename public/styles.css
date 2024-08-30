@@ -1,0 +1,264 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Header Styles */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure that the header text does not overlap */
+.header .logo {
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 130px;
+    height: auto;
+}
+
+.header h1 {
+    margin: 0;
+    color: red;
+    font-size: 35px;
+    font-weight: 600;
+    text-align: center;
+    padding-left: 180px;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Form Container */
+.form-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 120px auto 2rem; /* Add top margin to push below the header */
+    padding: 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading */
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-size: 30px;
+    text-decoration: underline;
+}
+
+/* Form Group */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #555;
+}
+
+.form-group select,
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input[type="datetime-local"] {
+    font-size: 1rem;
+}
+
+.form-group textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+/* Form Elements Hover Effects */
+.form-group select:focus,
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+/* Submit Button */
+.form-group input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.form-group input[type="submit"]:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Table Wrapper */
+.table-wrapper {
+    width: 90%;
+    margin: 2rem auto;
+    overflow-x: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+th, td {
+    padding: 0.8rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    white-space: nowrap;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+th {
+    background-color: #e9ecef;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #e9ecef;
+    color: #000;
+}
+
+/* Action Buttons */
+.logout-btn-container {
+    display: flex;
+    justify-content: flex-end; /* Align child elements to the end (right) */
+    margin-bottom: 1rem; /* Space below the button */
+}
+
+.logout-btn {
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #f44336; /* Red background */
+    border: 2px solid #d32f2f; /* Darker red border */
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: #e53935; /* Lighter red on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.logout-btn:focus {
+    outline: none;
+    box-shadow: 0 0 3px 2px rgba(255, 0, 0, 0.5); /* Red glow effect */
+}
+
+.success-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+    font-size: 18px;
+    text-align: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+.success-popup.hide {
+    opacity: 0;
+    transition: opacity 0.5s ease-in;
+}
+
+/* Footer styling */
+.footer {
+    background-color: #004080; /* Dark blue background */
+    color: #fff; /* White text */
+    text-align: center; /* Centered text */
+    padding: 20px 0; /* Padding for top and bottom */
+    position: relative; /* Position relative to the document flow */
+    width: 100%; /* Full width footer */
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for effect */
+    margin-top: 20px; /* Space above the footer */
+}
+
+.footer p {
+    margin: 0; /* Remove default margins */
+    font-size: 1em; /* Font size */
+}
+
+.footer a {
+    color: #ffcc00; /* Link color (yellow) */
+    text-decoration: none; /* Remove underline from links */
+    margin-left: 5px;
+}
+
+.footer a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .form-container {
+        width: 95%;
+        padding: 1rem;
+        margin-top: 120px; /* Ensure space below fixed header */
+    }
+
+    .form-group input[type="submit"] {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .table-wrapper {
+        width: 100%;
+    }
+
+    table {
+        font-size: 0.9rem;
+    }
+}

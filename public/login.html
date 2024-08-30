@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #fff; /* Transparent background */
+            z-index: 1000; /* Ensure the header is above other content */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100px; /* Adjust based on the logo height */
+        }
+
+        .header .logo {
+            position: absolute;
+            left: 30px; /* Adjust based on your layout */
+            top: 50%;
+            transform: translateY(-50%);
+            width: 130px;
+            height: auto;
+            z-index: 1010; /* Ensure logo is above the header text */
+        }
+
+        .header h1 {
+            margin: 0;
+            color: red;
+            font-size: 35px;
+            font-weight: 600;
+            text-align: center;
+            font-family: 'Roboto', sans-serif;
+            position: relative;
+            z-index: 1000; /* Behind the logo */
+            padding-left: 180px; /* Space for logo */
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            background: transparent;
+            padding: 10px 0;
+            position: fixed;
+            top: 100px; /* Adjust based on header height */
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s, color 0.3s;
+            text-align: center;
+        }
+
+        .navbar a:hover,
+        .navbar a.active {
+            background-color: #0056b3;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        .login-container {
+            background: #fff;
+            margin-top: 150px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #f39c12, #e74c3c);
+            opacity: 0.2;
+            z-index: 0;
+            transition: opacity 0.3s;
+        }
+
+        .login-container:hover::before {
+            opacity: 0.4;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+            z-index: 1;
+            position: relative;
+            text-decoration: underline;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-container input {
+            padding-right: 40px;
+        }
+
+        .password-container .toggle-icon {
+            position: absolute;
+            top: 50%;
+            margin-top: 10px;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #007bff;
+            transition: color 0.3s;
+        }
+
+        .password-container .toggle-icon:hover {
+            color: #0056b3;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #007bff, #00c6ff);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s, transform 0.2s;
+            position: relative;
+            z-index: 1;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #0056b3, #007bff);
+            transform: scale(1.05);
+        }
+
+        #error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <img src="logo_new.png" alt="Logo" class="logo">
+        <h1>𝐓𝐑𝐀𝐍𝐒𝐌𝐈𝐒𝐒𝐈𝐎𝐍 𝐂𝐎𝐑𝐏𝐎𝐑𝐀𝐓𝐈𝐎𝐍 𝐎𝐅 𝐓𝐄𝐋𝐀𝐍𝐆𝐀𝐍𝐀 𝐋𝐈𝐌𝐈𝐓𝐄𝐃</h1>
+    </header>
+
+    <!-- Navigation bar -->
+    <div class="navbar">
+        <a href='https://400kvssshankarpally.free.nf/'>Home</a>
+        <a href="#">LC Procedures</a>
+        <a href='https://maxregister-git-main-vinay-kumars-projects-f1559f4a.vercel.app/Displaydata_original.html'>Max-Min data</a>
+    </div>
+
+    <div class="login-container">
+        <h2>EHT Trippings Login</h2>
+        <form id="login-form" action="/login" method="POST">
+            <div class="input-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group password-container">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <i class="fas fa-eye toggle-icon" id="togglePassword"></i>
+            </div>
+            <button type="submit">Login</button>
+            <div id="error-message"></div>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const errorMessageDiv = document.getElementById('error-message');
+            const passwordField = document.getElementById('password');
+            const togglePassword = document.getElementById('togglePassword');
+
+            loginForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const username = document.getElementById('username').value;
+                const password = passwordField.value;
+
+                try {
+                    const response = await fetch('/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+
+                    if (response.ok) {
+
+                        // Reset the credentials in the form fields
+                        document.getElementById('username').value = '';
+                        document.getElementById('password').value = '';
+
+                        alert('Login successful!');
+                        window.location.href = 'index.html'; // Redirect to your main page
+                    } else {
+                        const message = await response.text();
+                        errorMessageDiv.textContent = 'Login failed: ' + message;
+                    }
+                } catch (error) {
+                    errorMessageDiv.textContent = 'Error: ' + error.message;
+                }
+            });
+
+            togglePassword.addEventListener('click', () => {
+                if (passwordField.type === 'password') {
+                    passwordField.type = 'text';
+                    togglePassword.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    passwordField.type = 'password';
+                    togglePassword.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
