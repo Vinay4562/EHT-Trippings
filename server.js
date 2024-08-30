@@ -15,7 +15,10 @@ const port = process.env.PORT || 3000; // Use environment variable or default to
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
-});
+})
+.then(() => console.log('MongoDB connected successfully'))
+.catch(err => console.error('MongoDB connection error:', err));
+
 
 // Define Mongoose schema and model
 const incidentSchema = new mongoose.Schema({
