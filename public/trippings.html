@@ -184,15 +184,7 @@
 
             async function fetchSubstationName() {
                 try {
-                    const response = await fetch('/current-substation', {
-                        headers: {
-                            'Authorization': 'chantichanti2255' // Replace with your actual token
-                        }
-                    });
-
-                    console.log('Status:', response.status); // Log status code
-                    console.log('Headers:', response.headers); // Log headers
-
+                    const response = await fetch('/current-substation');
                     const result = await response.text(); // Read response as text first
                     const data = JSON.parse(result); // Parse text response as JSON
 

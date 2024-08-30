@@ -98,10 +98,11 @@ const substations = {
 
 // Middleware to check if the user is authenticated
 function ensureAuthenticated(req, res, next) {
-    if (req.session.authenticated) {
-        return next(); // User is authenticated, proceed to the requested route
+    if (req.isAuthenticated()) {
+        return next();
+    } else {
+        return res.redirect('/login.html'); // Redirect to login page
     }
-    res.redirect('/trippings.html'); // User is not authenticated, redirect to login page
 }
 
 // Apply middleware to protected routes
