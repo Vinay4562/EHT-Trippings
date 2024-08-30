@@ -98,19 +98,19 @@ const substations = {
 
 // Middleware to check if the user is authenticated
 function ensureAuthenticated(req, res, next) {
-    console.log('Session:', req.session);  // Debugging log
     if (req.session && req.session.authenticated && req.session.substationName) {
         return next();
     } else {
+        res.clearCookie('connect.sid'); // Clear session cookie
         return res.redirect('/login.html');
     }
 }
-
 
 // Apply middleware to protected routes
 app.use('/protected', ensureAuthenticated);
 
 app.get('/trippings.html', ensureAuthenticated, (req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
     res.sendFile(path.join(__dirname, 'public', 'trippings.html'));
 });
 
