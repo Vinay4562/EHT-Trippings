@@ -183,41 +183,52 @@
             };
 
             async function fetchSubstationName() {
-                try {
-                    const response = await fetch('/current-substation');
-                    const result = await response.text(); // Read response as text first
-                    const data = JSON.parse(result); // Parse text response as JSON
-
-                    if (response.ok) {
-                        if (data.substation) {
-                            substationSelect.value = data.substation;
-                            populateFeederDropdown(data.substation);
-                        }
-                    } else {
-                        console.error('Failed to fetch substation name:', data);
-                    }
-                } catch (error) {
-                    console.error('Error fetching substation name:', error);
+        try {
+            const response = await fetch('/current-substation', {
+                headers: {
+                    'Authorization': 'Bearer YOUR_TOKEN' // Replace with your actual token
                 }
+            });
+
+            console.log('Status:', response.status);
+            console.log('Headers:', [...response.headers.entries()]);
+
+            const result = await response.text();
+            let responseData = {};
+
+            try {
+                responseData = JSON.parse(result);
+            } catch (e) {
+                console.error('Failed to parse JSON:', e);
             }
 
-            function handleLogin() {
-                fetchSubstationName();
-            }
-
-            function populateFeederDropdown(substation) {
-                feederSelect.innerHTML = '<option value="">Select Feeder</option>';
-                if (data[substation]) {
-                    data[substation].forEach(feeder => {
-                        let option = document.createElement('option');
-                        option.value = feeder;
-                        option.textContent = feeder;
-                        feederSelect.appendChild(option);
-                    });
+            if (response.ok) {
+                if (responseData.substation) {
+                    substationSelect.value = responseData.substation;
+                    populateFeederDropdown(responseData.substation, data);
                 }
+            } else {
+                console.error('Failed to fetch substation name:', responseData);
             }
+        } catch (error) {
+            console.error('Error fetching substation name:', error);
+        }
+    }
 
-            handleLogin();
+    function populateFeederDropdown(substation, feederData) {
+        feederSelect.innerHTML = '<option value="">Select Feeder</option>';
+        if (feederData[substation]) {
+            feederData[substation].forEach(feeder => {
+                let option = document.createElement('option');
+                option.value = feeder;
+                option.textContent = feeder;
+                feederSelect.appendChild(option);
+            });
+        }
+    }
+
+    fetchSubstationName();
+
 
             // Handle form submission (for both add and edit)
             form.addEventListener('submit', async function(event) {
