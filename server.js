@@ -1,13 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 const path = require('path');
-require('dotenv').config(); // Load environment variables
+const rateLimit = require('express-rate-limit');
+const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 3000; // Use environment variable or default to 3000
+const port = process.env.PORT || 3000;
 
 // Connect to MongoDB using the URI from the .env file
 mongoose.connect(process.env.MONGO_URI, {
@@ -35,18 +36,20 @@ const Incident = mongoose.model('Incident', incidentSchema);
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static('public'));
+app.use(cors()); // Allow cross-origin requests
 
 // Session configuration
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'chantichanti2255', // Use environment variable or default secret
+    secret: process.env.SESSION_SECRET || 'chantichanti2255',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } // Set to true if using HTTPS
+    cookie: { secure: process.env.NODE_ENV === 'production' } // Use secure cookies in production
 }));
 
+// Rate limiter for login
 const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // Limit each IP to 5 requests per windowMs
+    windowMs: 15 * 60 * 1000,
+    max: 5,
     message: 'Too many login attempts from this IP, please try again later.'
 });
 
@@ -85,27 +88,21 @@ const substations = {
 // Middleware to check if the user is authenticated
 function ensureAuthenticated(req, res, next) {
     if (req.session.authenticated) {
-        return next(); // User is authenticated, proceed to the requested route
+        return next();
     }
-    res.redirect('/trippings.html'); // User is not authenticated, redirect to login page
+    res.redirect('/login.html');
 }
 
 // Apply middleware to protected routes
 app.use('/protected', ensureAuthenticated);
 
+// Routes
 app.get('/trippings.html', ensureAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'trippings.html'));
 });
 
-app.use((req, res, next) => {
-    res.setHeader('Cache-Control', 'no-store');
-    next();
-});
-
-// Endpoint to handle login
-app.post('/login', (req, res) => {
+app.post('/login', loginLimiter, (req, res) => {
     const { username, password } = req.body;
-
     let authenticatedSubstation = null;
 
     for (const [substation, creds] of Object.entries(credentials)) {
@@ -130,8 +127,8 @@ app.post('/logout', (req, res) => {
             console.error('Error destroying session:', err);
             return res.status(500).send('Error logging out');
         }
-        res.clearCookie('connect.sid'); // Clear session cookie
-        res.redirect('/login.html'); // Redirect to login page
+        res.clearCookie('connect.sid');
+        res.redirect('/login.html');
     });
 });
 
