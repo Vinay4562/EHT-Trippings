@@ -93,8 +93,8 @@ function ensureAuthenticated(req, res, next) {
 // Apply middleware to protected routes
 app.use('/protected', ensureAuthenticated);
 
-app.get('/index.html', ensureAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get('/ehttripping.html', ensureAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'ehttripping.html'));
 });
 
 app.use((req, res, next) => {
@@ -118,7 +118,7 @@ app.post('/login', (req, res) => {
     if (authenticatedSubstation) {
         req.session.authenticated = true;
         req.session.substationName = authenticatedSubstation;
-        res.redirect('/index.html');
+        res.redirect('/ehttripping.html');
     } else {
         res.status(401).send('Unauthorized');
     }
