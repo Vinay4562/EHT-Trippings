@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
+const morgan = require('morgan');
+const jwt = require('jsonwebtoken');
 const path = require('path');
 require('dotenv').config(); // Load environment variables
 
@@ -48,6 +50,15 @@ const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 5, // Limit each IP to 5 requests per windowMs
     message: 'Too many login attempts from this IP, please try again later.'
+});
+
+// Logging middleware
+app.use(morgan('combined')); // or 'tiny', depending on your needs
+
+// Error-handling middleware
+app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err);
+    res.status(500).send('Internal Server Error');
 });
 
 // Predefined credentials for login
@@ -260,6 +271,17 @@ app.get('/fetch-data', async (req, res) => {
     }
 });
 
+function authenticateJWT(req, res, next) {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) return res.sendStatus(401);
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
+}
+
 // Middleware to check authentication
 function authenticate(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -277,23 +299,17 @@ function authenticate(req, res, next) {
 }
 
 
-// Endpoint to get the substation name for the current session
-app.get('/current-substation', (req, res) => {
-    if (req.session && req.session.authenticated) {
-        const substation = req.session.substationName;
-        console.log('Current substation from session:', substation); // Debugging
-        
-        if (substation) {
-            const feeders = substations[substation] || [];
-            res.json({ substation, feeders });
-        } else {
-            res.status(404).send('Substation not found');
-        }
+app.get('/current-substation', authenticateJWT, (req, res) => {
+    const substation = req.user.substation;
+    console.log('Current substation from session:', substation); // Debugging
+    
+    if (substation) {
+        const feeders = substations[substation] || [];
+        res.json({ substation, feeders });
     } else {
-        res.status(401).send('Unauthorized');
+        res.status(404).send('Substation not found');
     }
 });
-
 
 
 // Start server
