@@ -262,17 +262,38 @@ app.get('/fetch-data', async (req, res) => {
 
 // Middleware to check authentication
 function authenticate(req, res, next) {
-    const token = req.headers['authorization'];
-    if (!token || token !== 'chantichanti2255') {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
         return res.status(401).send('Unauthorized');
     }
+    
+    // Extract token from the header (assuming Bearer scheme)
+    const token = authHeader.split(' ')[1];
+    if (token !== 'chantichanti2255') { // Replace with actual token validation
+        return res.status(401).send('Unauthorized');
+    }
+    
     next();
 }
 
-// Route requiring authentication
-app.get('/current-substation', authenticate, (req, res) => {
-    res.json({ substation: 'Some Substation Name' });
+
+// Endpoint to get the substation name for the current session
+app.get('/current-substation', (req, res) => {
+    if (req.session && req.session.authenticated) {
+        const substation = req.session.substationName;
+        console.log('Current substation from session:', substation); // Debugging
+        
+        if (substation) {
+            const feeders = substations[substation] || [];
+            res.json({ substation, feeders });
+        } else {
+            res.status(404).send('Substation not found');
+        }
+    } else {
+        res.status(401).send('Unauthorized');
+    }
 });
+
 
 
 // Start server
