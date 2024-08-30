@@ -260,16 +260,18 @@ app.get('/fetch-data', async (req, res) => {
     }
 });
 
-// Endpoint to get the substation name for the current session
-app.get('/current-substation', (req, res) => {
-    if (req.session.authenticated) {
-        const substation = req.session.substationName;
-        console.log('Current substation from session:', substation); // Debugging
-        const feeders = substations[substation] || [];
-        res.json({ substation, feeders });
-    } else {
-        res.status(401).send('Unauthorized');
+// Middleware to check authentication
+function authenticate(req, res, next) {
+    const token = req.headers['authorization'];
+    if (!token || token !== 'chantichanti2255') {
+        return res.status(401).send('Unauthorized');
     }
+    next();
+}
+
+// Route requiring authentication
+app.get('/current-substation', authenticate, (req, res) => {
+    res.json({ substation: 'Some Substation Name' });
 });
 
 
