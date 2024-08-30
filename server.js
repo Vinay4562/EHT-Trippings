@@ -35,7 +35,7 @@ const Incident = mongoose.model('Incident', incidentSchema);
 
 // Middleware
 app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors()); // Allow cross-origin requests
 
 // Session configuration
