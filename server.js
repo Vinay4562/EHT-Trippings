@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
-const path = require('path');
 require('dotenv').config(); // Load environment variables
 
 const app = express();
@@ -34,7 +33,7 @@ const Incident = mongoose.model('Incident', incidentSchema);
 
 // Middleware
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public'))); // Fix typo
+app.use(express.static('public'));
 
 // Session configuration
 app.use(session({
@@ -93,8 +92,8 @@ function ensureAuthenticated(req, res, next) {
 // Apply middleware to protected routes
 app.use('/protected', ensureAuthenticated);
 
-app.get('/ehttripping.html', ensureAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'ehttripping.html'));
+app.get('/index.html', ensureAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.use((req, res, next) => {
@@ -118,7 +117,7 @@ app.post('/login', (req, res) => {
     if (authenticatedSubstation) {
         req.session.authenticated = true;
         req.session.substationName = authenticatedSubstation;
-        res.redirect('/ehttripping.html');
+        res.redirect('/index.html');
     } else {
         res.status(401).send('Unauthorized');
     }
