@@ -98,10 +98,10 @@ const substations = {
 
 // Middleware to check if the user is authenticated
 function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
+    if (req.session && req.session.authenticated) {
         return next();
     } else {
-        return res.redirect('/login.html'); // Redirect to login page
+        return res.redirect('/login.html');
     }
 }
 
