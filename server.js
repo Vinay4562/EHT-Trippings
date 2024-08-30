@@ -274,35 +274,7 @@ app.get('/fetch-data', async (req, res) => {
     }
 });
 
-function authenticateJWT(req, res, next) {
-    const token = req.headers['authorization']?.split(' ')[1];
-    if (!token) return res.sendStatus(401);
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) return res.sendStatus(403);
-        req.user = user;
-        next();
-    });
-}
-
-// Middleware to check authentication
-function authenticate(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    if (!authHeader) {
-        return res.status(401).send('Unauthorized');
-    }
-    
-    // Extract token from the header (assuming Bearer scheme)
-    const token = authHeader.split(' ')[1];
-    if (token !== 'chantichanti2255') { // Replace with actual token validation
-        return res.status(401).send('Unauthorized');
-    }
-    
-    next();
-}
-
-
-app.get('/current-substation', authenticateJWT, (req, res) => {
+app.get('/current-substation', ensureAuthenticated, (req, res) => {
     const substation = req.user.substation;
     console.log('Current substation from session:', substation); // Debugging
     
