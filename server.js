@@ -34,7 +34,7 @@ const Incident = mongoose.model('Incident', incidentSchema);
 
 // Middleware
 app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public'))); // Fix typo
 
 // Session configuration
 app.use(session({
