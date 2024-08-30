@@ -98,12 +98,14 @@ const substations = {
 
 // Middleware to check if the user is authenticated
 function ensureAuthenticated(req, res, next) {
-    if (req.session && req.session.authenticated) {
+    console.log('Session:', req.session);  // Debugging log
+    if (req.session && req.session.authenticated && req.session.substationName) {
         return next();
     } else {
         return res.redirect('/login.html');
     }
 }
+
 
 // Apply middleware to protected routes
 app.use('/protected', ensureAuthenticated);
@@ -276,7 +278,7 @@ app.get('/fetch-data', async (req, res) => {
 });
 
 app.get('/current-substation', ensureAuthenticated, (req, res) => {
-    const substation = req.user.substation;
+    const substation = req.session.substationName;
     console.log('Current substation from session:', substation); // Debugging
     
     if (substation) {
