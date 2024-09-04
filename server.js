@@ -115,9 +115,12 @@ app.get('/trippings.html', ensureAuthenticated, (req, res) => {
 });
 
 app.use((req, res, next) => {
-    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    res.setHeader('Cache-Control', 'post-check=0, pre-check=0');
+    res.setHeader('Pragma', 'no-cache');
     next();
 });
+
 
 // Endpoint to handle login
 app.post('/login', (req, res) => {

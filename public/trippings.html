@@ -544,6 +544,21 @@
             };
         }
     };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Prevent caching
+        window.onpageshow = function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        };
+    });
+
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted || (window.performance && window.performance.navigation.type === 1)) {
+            window.location.href = '/login.html';
+        }
+    });
     </script>
 </body>
 </html>
