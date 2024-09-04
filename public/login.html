@@ -290,6 +290,19 @@
                 }
             });
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const queryParams = new URLSearchParams(window.location.search);
+            if (queryParams.get('logout') === 'success') {
+                // Show success message if needed
+                document.getElementById('success-message').textContent = 'You have successfully logged out.';
+
+                // Refresh the page
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000); // Delay to allow message display
+            }
+        });
     </script>
 </body>
 </html>

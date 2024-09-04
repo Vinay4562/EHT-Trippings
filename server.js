@@ -151,7 +151,7 @@ app.post('/logout', (req, res) => {
             return res.status(500).send('Error logging out');
         }
         res.clearCookie('connect.sid'); // Clear session cookie
-        res.redirect('/login.html'); // Redirect to login page
+        res.redirect('/login.html?logout=success'); // Redirect to login page with query parameter
     });
 });
 
