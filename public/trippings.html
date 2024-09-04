@@ -553,12 +553,6 @@
             }
         };
     });
-
-    window.addEventListener('pageshow', function(event) {
-        if (event.persisted || (window.performance && window.performance.navigation.type === 1)) {
-            window.location.href = '/login.html';
-        }
-    });
     </script>
 </body>
 </html>
