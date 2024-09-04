@@ -553,6 +553,21 @@
             }
         };
     });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('loggedOut') === 'true') {
+            const successMessageDiv = document.getElementById('success-message');
+            successMessageDiv.textContent = 'You have successfully logged out.';
+        }
+
+        // Prevent caching to ensure the user can't use the back button to navigate to restricted pages
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.href = '/login.html';
+            }
+        });
+    });  
     </script>
 </body>
 </html>
