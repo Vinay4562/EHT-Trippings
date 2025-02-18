@@ -183,150 +183,117 @@
             };
 
             async function fetchSubstationName() {
-                try {
-                    const response = await fetch('/current-substation', {
-                        headers: {
-                            'Authorization': 'chantichanti2255' // Replace with your actual token
-                        }
-                    });
-
-                    console.log('Status:', response.status);
-                    console.log('Headers:', [...response.headers.entries()]);
-
-                    const result = await response.text();
-                    let responseData = {};
-
-                    try {
-                        responseData = JSON.parse(result);
-                    } catch (e) {
-                        console.error('Failed to parse JSON:', e);
+            try {
+                const response = await fetch('/current-substation', {
+                    headers: {
+                        'Authorization': 'chantichanti2255' // Replace with your actual token
                     }
+                });
 
-                    if (response.ok) {
-                        if (responseData.substation) {
-                            substationSelect.value = responseData.substation;
-                            populateFeederDropdown(responseData.substation, data);
-                        }
-                    } else {
-                        console.error('Failed to fetch substation name:', responseData);
-                    }
-                } catch (error) {
-                    console.error('Error fetching substation name:', error);
-                }
-            }
-
-            function populateFeederDropdown(substation, feederData) {
-                feederSelect.innerHTML = '<option value="">Select Feeder</option>';
-                if (feederData[substation]) {
-                    feederData[substation].forEach(feeder => {
-                        let option = document.createElement('option');
-                        option.value = feeder;
-                        option.textContent = feeder;
-                        feederSelect.appendChild(option);
-                    });
-                }
-            }
-
-            fetchSubstationName();
-
-            // Handle form submission (for both add and edit)
-            form.addEventListener('submit', async function(event) {
-                event.preventDefault();
-
-                // Get form values
-                const substationName = substationSelect.value;
-                const feederName = feederSelect.value;
-                const feederType = form.elements['feeder_type'].value;
-                const trippingDate = form.elements['tripping_date'].value;
-                const chargeDate = form.elements['charge_date'].value;
-                const duration = form.elements['duration'].value;
-                const trippingIndications = form.elements['tripping_indications'].value;
-                const breakdownDeclared = form.elements['breakdown_declared'].value;
-                const faultIdentified = form.elements['fault_identified'].value;
-                const faultLocation = form.elements['fault_location'].value;
-                const remarks = form.elements['remarks'].value;
-
-                // Validate required fields
-                if (!substationName || !feederName) {
-                    alert('Please select both Substation and Feeder.');
-                    return;
-                }
-
-                const incidentData = {
-                    substationName,
-                    feederName,
-                    feederType,
-                    trippingDate,
-                    chargeDate,
-                    duration,
-                    trippingIndications,
-                    breakdownDeclared,
-                    faultIdentified,
-                    faultLocation,
-                    remarks
-                };
+                const result = await response.text();
+                let responseData = {};
 
                 try {
-                    // Determine HTTP method based on form action
-                    const method = form.action.includes('/update/') ? 'PUT' : 'POST';
-                    const response = await fetch(form.action || '/submit', {
-                        method,
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(incidentData)
-                    });
-
-                    // Check for successful response
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-
-                    // Log a success message
-                    console.log(method === 'PUT' ? 'Data updated successfully' : 'Data submitted successfully');
-
-                    // Show success popup
-                    showPopup(method === 'PUT' ? 'Data updated successfully!' : 'Data added successfully!');
-
-                    // Preserve Substation Name and Feeder Name, reset other fields
-                    const preservedSubstationName = substationSelect.value;
-                    const preservedFeederName = feederSelect.value;
-
-                    // Reset form fields
-                    form.reset();
-
-                    // Restore the preserved values
-                    substationSelect.value = preservedSubstationName;
-                    feederSelect.value = preservedFeederName;
-
-                    // Reset form action to default for new submissions
-                    form.action = '/submit';
-
-                    // Optionally, refresh displayed data
-                    await displayData();
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('An error occurred while submitting the form. Please try again.');
+                    responseData = JSON.parse(result);
+                } catch (e) {
+                    console.error('Failed to parse JSON:', e);
                 }
-            });
 
-            // Function to show the popup
-            function showPopup(message) {
-                const popup = document.createElement('div');
-                popup.className = 'success-popup';
-                popup.textContent = message;
-                document.body.appendChild(popup);
+                if (response.ok && responseData.substation) {
+                    substationSelect.value = responseData.substation;
+                    populateFeederDropdown(responseData.substation, data);
+                }
+            } catch (error) {
+                console.error('Error fetching substation name:', error);
+            }
+        }
 
-                // Automatically hide the popup after 3 seconds
+        function populateFeederDropdown(substation, feederData) {
+            feederSelect.innerHTML = '<option value="">Select Feeder</option>';
+            if (feederData[substation]) {
+                feederData[substation].forEach(feeder => {
+                    let option = document.createElement('option');
+                    option.value = feeder;
+                    option.textContent = feeder;
+                    feederSelect.appendChild(option);
+                });
+            }
+        }
+
+        fetchSubstationName();
+
+        // Handle form submission (for both add and edit)
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const substationName = substationSelect.value;
+            const feederName = feederSelect.value;
+            const feederType = form.elements['feeder_type'].value;
+            const trippingDate = form.elements['tripping_date'].value;
+            const chargeDate = form.elements['charge_date'].value;
+            const duration = form.elements['duration'].value;
+            const trippingIndications = form.elements['tripping_indications'].value;
+            const breakdownDeclared = form.elements['breakdown_declared'].value;
+            const faultIdentified = form.elements['fault_identified'].value;
+            const faultLocation = form.elements['fault_location'].value;
+            const remarks = form.elements['remarks'].value;
+
+            if (!substationName || !feederName) {
+                alert('Please select both Substation and Feeder.');
+                return;
+            }
+
+            const incidentData = {
+                substationName,
+                feederName,
+                feederType,
+                trippingDate,
+                chargeDate,
+                duration,
+                trippingIndications,
+                breakdownDeclared,
+                faultIdentified,
+                faultLocation,
+                remarks
+            };
+
+            try {
+                const method = form.action.includes('/update/') ? 'PUT' : 'POST';
+                const response = await fetch(form.action || '/submit', {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(incidentData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                showPopup(method === 'PUT' ? 'Data updated successfully!' : 'Data added successfully!');
+                form.reset();
+                await displayData();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while submitting the form. Please try again.');
+            }
+        });
+
+        function showPopup(message) {
+            const popup = document.createElement('div');
+            popup.className = 'success-popup';
+            popup.textContent = message;
+            document.body.appendChild(popup);
+            setTimeout(() => {
+                popup.classList.add('hide');
                 setTimeout(() => {
-                    popup.classList.add('hide');
-                    setTimeout(() => {
-                        popup.remove();
-                    }, 200); // Delay for the hide transition
-                }, 1000);
-            }
+                    popup.remove();
+                }, 200);
+            }, 1000);
+        }
 
-            async function displayData() {
+        async function displayData() {
                 const selectedSubstation = substationSelect.value;
                 const selectedFeeder = feederSelect.value;
 
@@ -343,8 +310,6 @@
                     }
 
                     const data = await response.json();
-                    console.log('Fetched data:', data);
-
                     tableBody.innerHTML = ''; // Clear previous data
 
                     if (data.length === 0) {
@@ -375,17 +340,23 @@
                         tableBody.appendChild(row);
                     });
 
-                    // Add event listeners for edit and delete buttons
+                    // Add event listeners for the edit and delete buttons
                     document.querySelectorAll('.edit-btn').forEach(button => {
-                        button.addEventListener('click', handleEdit);
+                        button.addEventListener('click', (e) => {
+                            const id = e.target.dataset.id;
+                            handleEdit(id);
+                        });
                     });
 
                     document.querySelectorAll('.delete-btn').forEach(button => {
-                        button.addEventListener('click', handleDelete);
+                        button.addEventListener('click', (e) => {
+                            const id = e.target.dataset.id;
+                            handleDelete(id);
+                        });
                     });
+
                 } catch (error) {
                     console.error('Error fetching data:', error);
-                    tableBody.innerHTML = '<tr><td colspan="12">Error fetching data. Please try again later.</td></tr>';
                 }
             }
 
@@ -411,8 +382,7 @@
                 document.getElementById('fault-identified').value = cells[9].textContent;
                 document.getElementById('fault-location').value = cells[10].textContent;
                 document.getElementById('remarks').value = cells[11].textContent;
-
-                // Change form action to update
+                
                 form.action = `/update/${id}`;
 
                 // Trigger duration calculation based on current input values
@@ -422,22 +392,20 @@
             // Handle deleting a record
             async function handleDelete(event) {
                 const id = event.target.dataset.id;
+                const confirmed = confirm('Are you sure you want to delete this record?');
+                if (!confirmed) return;
 
-                if (confirm('Are you sure you want to delete this record?')) {
-                    try {
-                        const response = await fetch(`/delete/${id}`, {
-                            method: 'DELETE'
-                        });
-
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-
-                        console.log('Record deleted successfully');
-                        await displayData(); // Refresh the table
-                    } catch (error) {
-                        console.error('Error deleting record:', error);
+                try {
+                    const response = await fetch(`/delete/${id}`, { method: 'DELETE' });
+                    if (response.ok) {
+                        showPopup('Data deleted successfully!');
+                        await displayData();
+                    } else {
+                        throw new Error('Failed to delete record.');
                     }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the record.');
                 }
             }
 
@@ -451,16 +419,13 @@
             }
 
             // Helper function to format date and time for display (DD-MM-YYYY & HH:MM:SS)
-            function formatDateTime(dateTime) {
-                if (!dateTime) return '';
+                function formatDateTime(dateTime) {
                 const date = new Date(dateTime);
-                const day = String(date.getDate()).padStart(2, '0');
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const year = date.getFullYear();
-                const hours = String(date.getHours()).padStart(2, '0');
-                const minutes = String(date.getMinutes()).padStart(2, '0');
-                const seconds = String(date.getSeconds()).padStart(2, '0');
-                return `${day}-${month}-${year} & ${hours}:${minutes}:${seconds}`;
+                const hours = date.getHours().toString().padStart(2, '0');
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                const seconds = date.getSeconds().toString().padStart(2, '0');
+                const dateFormatted = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
+                return `${dateFormatted} ${hours}:${minutes}:${seconds}`;
             }
 
             // Calculate and display duration as HH:MM:SS
