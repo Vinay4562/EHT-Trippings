@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 const morgan = require('morgan');
-const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 require('dotenv').config(); // Load environment variables
@@ -41,10 +40,6 @@ const Incident = mongoose.model('Incident', incidentSchema);
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors({
-    origin: ['http://400kvssshankarpally.free.nf', 'https://eht-trippings-git-main-vinay-kumars-projects-f1559f4a.vercel.app'],
-    credentials: true
-}));
 
 // Session configuration
 app.use(session({
