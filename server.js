@@ -25,8 +25,8 @@ const incidentSchema = new mongoose.Schema({
     substationName: String,
     feederName: String,
     feederType: String,
-    trippingDate: Date,
-    chargeDate: Date,
+    trippingDate: Date, // Stored as UTC
+    chargeDate: Date,   // Stored as UTC
     duration: String,
     trippingIndications: String,
     breakdownDeclared: String,
