@@ -5,6 +5,9 @@ body {
     margin: 0;
     padding: 0;
     color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure body takes full viewport height */
 }
 
 .header {
@@ -128,6 +131,7 @@ body {
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex: 1; /* Allow container to grow and push footer down */
 }
 
 h1 {
@@ -216,10 +220,14 @@ button:hover {
     color: #fff; /* White text */
     text-align: center; /* Centered text */
     padding: 20px 0; /* Padding for top and bottom */
-    position: relative; /* Position relative to the document flow */
     width: 100%; /* Full width footer */
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for effect */
-    margin-top: 20px; /* Space above the footer */
+    flex-shrink: 0; /* Prevent footer from shrinking */
+}
+
+/* Ensure footer stays at the bottom */
+body > .container {
+    flex: 1; /* Allow container to grow and push footer down */
 }
 
 .footer p {
@@ -252,6 +260,8 @@ button:hover {
 /* Table Styles */
 .table-container {
     overflow-x: auto;
+    max-height: 400px; /* Set a fixed height for the table container */
+    overflow-y: auto; /* Enable vertical scrolling */
 }
 
 table {
@@ -269,6 +279,9 @@ th, td {
 th {
     background-color: #007bff;
     color: white;
+    position: sticky; /* Fix table header to the top */
+    top: 0; /* Stick to the top of the table container */
+    z-index: 10; /* Ensure header stays above table content */
 }
 
 tr:nth-child(even) {
@@ -339,6 +352,10 @@ tr:hover {
     }
 
     /* Table Adjustments */
+    .table-container {
+        max-height: 350px; /* Slightly smaller height for tablet */
+    }
+
     table {
         font-size: 14px; /* Slightly smaller font size */
     }
@@ -449,7 +466,7 @@ tr:hover {
 
     /* Table Adjustments */
     .table-container {
-        overflow-x: auto;
+        max-height: 300px; /* Smaller height for smaller screens */
     }
 
     table {
