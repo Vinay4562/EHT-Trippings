@@ -78,7 +78,7 @@ body {
     top: 10px;
 }
 
-.hramburger.active span:nth-child(2) {
+.hamburger.active span:nth-child(2) {
     opacity: 0;
 }
 
@@ -285,13 +285,93 @@ tr:hover {
     font-style: italic;
 }
 
-/* Media Queries for Mobile Responsiveness */
-@media (max-width: 768px) {
+/* Media Queries for Responsiveness */
+
+/* Tablet (up to 999px) */
+@media (max-width: 999px) {
     /* Header Adjustments */
     .header {
-        height: 80px; /* Reduce header height on mobile */
+        height: 90px; /* Slightly reduce header height */
+        padding: 10px 15px;
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+    }
+
+    .header .logo {
+        width: 110px; /* Slightly smaller logo */
+        margin-right: 15px;
+    }
+
+    .header h1 {
+        font-size: 28px; /* Slightly smaller font size */
+    }
+
+    /* Navbar Adjustments */
+    .navbar {
+        top: 90px; /* Adjust position based on header height */
+    }
+
+    .navbar a {
+        padding: 12px 20px; /* Slightly smaller padding */
+        font-size: 15px; /* Slightly smaller font */
+    }
+
+    /* Container Adjustments */
+    .container {
+        margin: 160px auto 10px auto; /* Adjust margin-top */
+        width: 92%;
+        padding: 15px;
+    }
+
+    /* Form Adjustments */
+    form {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    label, input[type="date"] {
+        margin: 5px;
+    }
+
+    /* Table Adjustments */
+    table {
+        font-size: 14px; /* Slightly smaller font size */
+    }
+
+    th, td {
         padding: 10px;
-        flex-direction: row; /* Change to row to keep hamburger on the right */
+    }
+
+    /* Button Container Adjustments */
+    .button-container {
+        justify-content: center; /* Center buttons on tablet */
+        gap: 15px;
+    }
+
+    button {
+        padding: 8px 16px; /* Slightly smaller buttons */
+        font-size: 14px;
+    }
+
+    /* Footer Adjustments */
+    .footer {
+        padding: 15px 0;
+        font-size: 0.9em;
+    }
+}
+
+/* Small Tablet/Large Phone (up to 690px) */
+@media (max-width: 690px) {
+    /* Header Adjustments */
+    .header {
+        height: 80px; /* Further reduce header height */
+        padding: 10px;
+        flex-direction: row; /* Keep row layout to position hamburger on the right */
         justify-content: space-between; /* Ensure hamburger stays on the right */
         align-items: center;
     }
@@ -302,12 +382,12 @@ tr:hover {
     }
 
     .header .logo {
-        width: 100px;
-        margin-right: 10px; /* Reduce margin on mobile */
+        width: 100px; /* Further reduce logo size */
+        margin-right: 10px;
     }
 
     .header h1 {
-        font-size: 20px; /* Smaller font size on mobile */
+        font-size: 20px; /* Smaller font size */
         text-align: left; /* Align text to the left */
     }
 
@@ -350,7 +430,7 @@ tr:hover {
 
     /* Container Adjustments */
     .container {
-        margin: 120px auto 10px auto; /* Adjust margin-top for mobile */
+        margin: 140px auto 10px auto; /* Adjust margin-top */
         width: 95%;
         padding: 10px;
     }
@@ -373,7 +453,7 @@ tr:hover {
     }
 
     table {
-        font-size: 12px; /* Smaller font size on mobile */
+        font-size: 12px; /* Smaller font size */
     }
 
     th, td {
@@ -387,7 +467,9 @@ tr:hover {
     }
 
     button {
-        width: 100%; /* Full-width buttons on mobile */
+        width: 100%; /* Full-width buttons */
+        padding: 10px;
+        font-size: 14px;
     }
 
     /* Footer Adjustments */
