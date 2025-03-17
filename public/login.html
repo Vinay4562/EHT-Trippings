@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, private">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -26,18 +29,21 @@
             z-index: 1000;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             height: 100px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
         }
 
         .header .logo {
-            position: absolute;
-            left: 30px;
-            top: 50%;
-            transform: translateY(-50%);
             width: 130px;
             height: auto;
-            z-index: 1010;
+            margin-left: 30px;
         }
 
         .header h1 {
@@ -45,11 +51,19 @@
             color: red;
             font-size: 35px;
             font-weight: 600;
-            text-align: center;
             font-family: 'Roboto', sans-serif;
-            position: relative;
-            z-index: 1000;
-            padding-left: 180px;
+            margin-left: 20px;
+            white-space: nowrap;
+        }
+
+        .hamburger {
+            display: none;
+            font-size: 30px;
+            background: none;
+            border: none;
+            color: #333;
+            cursor: pointer;
+            margin-right: 20px;
         }
 
         .navbar {
@@ -60,7 +74,8 @@
             position: fixed;
             top: 100px;
             width: 100%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
         }
 
         .navbar a {
@@ -78,6 +93,47 @@
             background-color: #0056b3;
             color: #fff;
             border-radius: 4px;
+        }
+
+        /* Mobile Menu Overlay */
+        .navbar.active {
+            display: block;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 250px;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 60px 20px 20px;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar.active a {
+            display: block;
+            margin: 15px 0;
+            text-align: left;
+            color: #333;
+        }
+
+        .navbar.active a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .close-btn {
+            display: none; /* Hidden by default in desktop */
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .navbar.active .close-btn {
+            display: block; /* Visible in mobile overlay */
         }
 
         .login-container {
@@ -200,16 +256,91 @@
         #success-message {
             color: green;
         }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 25px;
+                margin-left: 15px;
+            }
+
+            .header h1::before {
+                content: "TG TRANSCO";
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .navbar {
+                display: none;
+            }
+
+            .navbar.active {
+                display: block;
+            }
+
+            .login-container {
+                width: 80%; /* Reduced from 90% */
+                max-width: 300px; /* Added max-width for control */
+                padding: 25px;
+                margin-top: 120px;
+            }
+
+            .header .logo {
+                width: 100px;
+                margin-left: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 20px;
+                margin-left: 10px;
+            }
+
+            .header .logo {
+                width: 80px;
+                margin-left: 10px;
+            }
+
+            .hamburger {
+                font-size: 24px;
+            }
+
+            .login-container {
+                width: 75%; /* Further reduced */
+                max-width: 280px; /* Adjusted max-width */
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .navbar.active {
+                width: 200px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .header h1::before {
+                content: "𝐓𝐑𝐀𝐍𝐒𝐌𝐈𝐒𝐒𝐈𝐎𝐍 𝐂𝐎𝐑𝐏𝐎𝐑𝐀𝐓𝐈𝐎𝐍 𝐎𝐅 𝐓𝐄𝐋𝐀𝐍𝐆𝐀𝐍𝐀 𝐋𝐈𝐌𝐈𝐓𝐄𝐃";
+            }
+        }
     </style>
 </head>
 <body>
-
     <header class="header">
-        <img src="logo_new.png" alt="Company Logo" class="logo">
-        <h1>𝐓𝐑𝐀𝐍𝐒𝐌𝐈𝐒𝐒𝐈𝐎𝐍 𝐂𝐎𝐑𝐏𝐎𝐑𝐀𝐓𝐈𝐎𝐍 𝐎𝐅 𝐓𝐄𝐋𝐀𝐍𝐆𝐀𝐍𝐀 𝐋𝐈𝐌𝐈𝐓𝐄𝐃</h1>
+        <div class="header-content">
+            <img src="logo_new.png" alt="Company Logo" class="logo">
+            <h1></h1>
+        </div>
+        <button class="hamburger">☰</button>
     </header>
 
     <div class="navbar">
+        <button class="close-btn">✕</button>
         <a href='https://400kvssshankarpally.free.nf/'>Home</a>
         <a href="#">LC Procedures</a>
         <a href='https://maxregister-git-main-vinay-kumars-projects-f1559f4a.vercel.app/Displaydata_original.html'>Max-Min data</a>
@@ -232,7 +363,18 @@
             <div id="success-message"></div>
         </form>
     </div>
+
     <script>
+        // Toggle Hamburger Menu
+        document.querySelector('.hamburger').addEventListener('click', function() {
+            document.querySelector('.navbar').classList.toggle('active');
+        });
+
+        // Close Hamburger Menu
+        document.querySelector('.close-btn').addEventListener('click', function() {
+            document.querySelector('.navbar').classList.remove('active');
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             const loginForm = document.getElementById('login-form');
             const errorMessageDiv = document.getElementById('error-message');
@@ -269,7 +411,7 @@
 
                         successMessageDiv.textContent = 'Login successful!';
                         setTimeout(() => {
-                            window.location.href = 'trippings.html'; // Redirect to your main page
+                            window.location.href = 'trippings.html';
                         }, 1000);
                     } else {
                         const message = await response.text();
@@ -289,19 +431,26 @@
                     togglePassword.classList.replace('fa-eye-slash', 'fa-eye');
                 }
             });
+
+            // Clear form fields on page load
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
         });
 
         document.addEventListener('DOMContentLoaded', () => {
             const queryParams = new URLSearchParams(window.location.search);
             if (queryParams.get('logout') === 'success') {
-                // Show success message if needed
                 document.getElementById('success-message').textContent = 'You have successfully logged out.';
-
-                // Refresh the page
                 setTimeout(() => {
                     window.location.reload();
-                }, 1000); // Delay to allow message display
+                }, 1000);
             }
+        });
+
+        // Prevent back navigation
+        window.history.pushState(null, null, window.location.href);
+        window.addEventListener('popstate', function () {
+            window.history.pushState(null, null, window.location.href);
         });
     </script>
 </body>
