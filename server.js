@@ -9,7 +9,10 @@ const path = require('path');
 require('dotenv').config(); // Load environment variables
 
 const app = express();
-const port = process.env.PORT || 3000; // Use environment variable or default to 3000
+const port = process.env.PORT || 3000;
+
+console.log('Node.js version:', process.version);
+console.log('Mongoose version:', require('mongoose').version);
 
 // Connect to MongoDB using the URI from the .env file
 mongoose.connect(process.env.MONGO_URI, {
@@ -24,8 +27,8 @@ const incidentSchema = new mongoose.Schema({
     substationName: String,
     feederName: String,
     feederType: String,
-    trippingDate: Date, // Stored as UTC
-    chargeDate: Date,   // Stored as UTC
+    trippingDate: Date,
+    chargeDate: Date,
     duration: String,
     trippingIndications: String,
     breakdownDeclared: String,
@@ -42,20 +45,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Session configuration
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'chantichanti2255', // Use environment variable or default secret
+    secret: process.env.SESSION_SECRET || 'chantichanti2255',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } // Set to true if using HTTPS
+    cookie: { secure: false }
 }));
 
 const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // Limit each IP to 5 requests per windowMs
+    windowMs: 15 * 60 * 1000,
+    max: 5,
     message: 'Too many login attempts from this IP, please try again later.'
 });
 
 // Logging middleware
-app.use(morgan('combined')); // or 'tiny', depending on your needs
+app.use(morgan('combined'));
 
 // Error-handling middleware
 app.use((err, req, res, next) => {
@@ -101,7 +104,7 @@ function ensureAuthenticated(req, res, next) {
     if (req.session && req.session.authenticated && req.session.substationName) {
         return next();
     } else {
-        res.clearCookie('connect.sid'); // Clear session cookie
+        res.clearCookie('connect.sid');
         return res.redirect('/login.html');
     }
 }
@@ -149,8 +152,8 @@ app.post('/logout', (req, res) => {
             console.error('Error destroying session:', err);
             return res.status(500).send('Error logging out');
         }
-        res.clearCookie('connect.sid'); // Clear session cookie
-        res.redirect('/login.html?loggedOut=true'); // Redirect to login page with query parameter
+        res.clearCookie('connect.sid');
+        res.redirect('/login.html?loggedOut=true');
     });
 });
 
@@ -253,12 +256,10 @@ app.get('/fetch-data', async (req, res) => {
     const { fromDate, toDate } = req.query;
 
     try {
-        // Find incidents within the date range
         const incidents = await Incident.find({
             trippingDate: { $gte: new Date(fromDate), $lte: new Date(toDate) }
         });
 
-        // Find all unique substations
         const allIncidents = await Incident.find({});
         const remainingSubstations = [...new Set(allIncidents.map(incident => incident.substationName))];
         const feeders = remainingSubstations.reduce((acc, substation) => {
@@ -281,7 +282,7 @@ app.get('/fetch-data', async (req, res) => {
 
 app.get('/current-substation', ensureAuthenticated, (req, res) => {
     const substation = req.session.substationName;
-    console.log('Current substation from session:', substation); // Debugging
+    console.log('Current substation from session:', substation);
     
     if (substation) {
         const feeders = substations[substation] || [];
