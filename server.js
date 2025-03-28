@@ -19,7 +19,6 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('MongoDB connected successfully'))
 .catch(err => console.error('MongoDB connection error:', err));
 
-
 // Define Mongoose schema and model
 const incidentSchema = new mongoose.Schema({
     substationName: String,
@@ -64,21 +63,22 @@ app.use((err, req, res, next) => {
     res.status(500).send('Internal Server Error');
 });
 
-// Predefined credentials for login
-const credentials = {
-    "400KVSS Shankarpally": { username: "shankarpally400kv", password: "shankarpally@V959" },
-    "400/220/132KVSS Kethireddypally": { username: "kethireddypally400kv", password: "kethireddypally@V943" },
-    "220/132/33KVSS Tandur": { username: "tandur220kv", password: "tandur@V514" },
-    "220/132KVSS Parigi": { username: "parigi220kv", password: "parigi@V326" },
-    "220/132KV SS Chandanavally": { username: "chandanavally220kv", password: "chandanavally@V168" },
-    "132/33KVSS Vikarabad": { username: "vikarabad132kv", password: "vikarabad@V156" },
-    "132/33KVSS KODANGAL": { username: "kodangal132kv", password: "kodangal@V784" },
-    "132/33KVSS Parigi": { username: "parigi132kv", password: "parigi@V127" },
-    "132/33KVSS PUTTPAHAD": { username: "puttapahad132kv", password: "puttapahad@V198" },
-    "132/33KV Kanakamamidi": { username: "kanakamamidi132kv", password: "kanakamamidi@V642" },
-    "132/33KVSS Donthanpally": { username: "donthanpally132kv", password: "donthanpally@V848" },
-    "132/33KVSS Sriranga Puram": { username: "srirangapuram132kv", password: "srirangapuram@V414" }
-};
+// Load credentials from .env with error handling
+let credentials = {};
+try {
+    if (process.env.CREDENTIALS) {
+        credentials = JSON.parse(process.env.CREDENTIALS);
+    } else {
+        throw new Error('CREDENTIALS environment variable is not set.');
+    }
+} catch (err) {
+    console.error('Error loading credentials from .env:', err.message);
+    process.exit(1);
+}
+if (Object.keys(credentials).length === 0) {
+    console.error('Credentials object is empty. Please check CREDENTIALS in .env.');
+    process.exit(1);
+}
 
 // Substation names and feeders
 const substations = {
@@ -121,9 +121,8 @@ app.use((req, res, next) => {
     next();
 });
 
-
 // Endpoint to handle login
-app.post('/login', (req, res) => {
+app.post('/login', loginLimiter, (req, res) => {
     const { username, password } = req.body;
 
     let authenticatedSubstation = null;
@@ -291,7 +290,6 @@ app.get('/current-substation', ensureAuthenticated, (req, res) => {
         res.status(404).send('Substation not found');
     }
 });
-
 
 // Start server
 app.listen(port, () => {
