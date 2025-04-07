@@ -6,8 +6,9 @@
     <title>EHT Trippings Records</title>
     <!-- Include XLSX Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- Include jsPDF and AutoTable Plugin -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.6.0/jspdf.umd.min.js"></script>
+    <!-- Include jsPDF (stable version) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Include AutoTable Plugin -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.16/jspdf.plugin.autotable.min.js"></script>
     <!-- Include Font Awesome for WhatsApp Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -78,7 +79,7 @@
     <header class="header">
         <div class="header-content">
             <img src="logo_new.png" alt="Logo" class="logo">
-            <h1 id="header-title" data-mobile="TG TRANSCO" data-desktop="𝐓𝐑𝐀𝐍𝐒𝐌𝐈𝐒𝐒𝐈𝐎𝐍 𝐂𝐎𝐑𝐏𝐎𝐑𝐀𝐓𝐈𝐎𝐍 𝐎𝐅 𝐓𝐄𝐋𝐀𝐍𝐆𝐀𝐍𝐀 𝐋𝐈𝐌𝐈𝐓𝐄𝐃">
+            <h1 id="header-title" data-mobile="TG TRANSCO" data-desktop="𝐓𝐑𝐀𝐍𝐒𝐌𝐈𝐒𝐒𝐈𝐎𝐍 𝐂𝐎𝐑𝐏𝐎𝐑𝐀𝐓𝐈𝐎𝐍 𝐎𝐅 𝐇𝐓𝐄𝐋𝐀𝐍𝐆𝐀𝐍𝐀 𝐋𝐈𝐌𝐈𝐓𝐄𝐃">
                 𝐓𝐑𝐀𝐍𝐒𝐌𝐈𝐒𝐒𝐈𝐎𝐍 𝐂𝐎𝐑𝐏𝐎𝐑𝐀𝐓𝐈𝐎𝐍 𝐎𝐅 𝐓𝐄𝐋𝐀𝐍𝐆𝐀𝐍𝐀 𝐋𝐈𝐌𝐈𝐓𝐄𝐃
             </h1>
         </div>
@@ -379,6 +380,10 @@
         }
 
         document.getElementById('printTable').addEventListener('click', () => {
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+                alert('jsPDF library failed to load. Please check your internet connection and try again.');
+                return;
+            }
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape' });
             const formattedFromDate = formatDate(selectedFromDate);
@@ -451,6 +456,10 @@
         }
 
         function generateAndSharePDF() {
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+                alert('jsPDF library failed to load. Please check your internet connection and try again.');
+                return;
+            }
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape' });
             const formattedFromDate = formatDate(selectedFromDate);
