@@ -9,8 +9,69 @@
     <!-- Include jsPDF and AutoTable Plugin -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.6.0/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.16/jspdf.plugin.autotable.min.js"></script>
+    <!-- Include Font Awesome for WhatsApp Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="dataextractionCSS.css">
+    <style>
+        /* WhatsApp Floating Button Styles with Animation */
+.whatsapp-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: none; /* Hidden by default, shown via JS */
+}
 
+.whatsapp-btn {
+  background-color: #25D366; /* WhatsApp green */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  cursor: pointer;
+  animation: zoomInOut 2s infinite ease-in-out;
+  overflow: hidden; /* Ensures no overflow */
+}
+
+@keyframes zoomInOut {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.whatsapp-options {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  display: none;
+  flex-direction: column;
+  padding: 5px;
+}
+
+.whatsapp-option {
+  padding: 8px 15px;
+  cursor: pointer;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.whatsapp-option:hover {
+  background-color: #f0f0f0;
+}
+
+@media (min-width: 769px) {
+  .whatsapp-float {
+    display: none !important;
+  }
+}
+    </style>
 </head>
 <body>
 
@@ -18,7 +79,7 @@
         <div class="header-content">
             <img src="logo_new.png" alt="Logo" class="logo">
             <h1 id="header-title" data-mobile="TG TRANSCO" data-desktop="𝐓𝐑𝐀𝐍𝐒𝐌𝐈𝐒𝐒𝐈𝐎𝐍 𝐂𝐎𝐑𝐏𝐎𝐑𝐀𝐓𝐈𝐎𝐍 𝐎𝐅 𝐓𝐄𝐋𝐀𝐍𝐆𝐀𝐍𝐀 𝐋𝐈𝐌𝐈𝐓𝐄𝐃">
-                𝐓𝐑𝐀𝐍𝐒�{M𝐈𝐒𝐒𝐈𝐎𝐍 𝐂𝐎𝐑𝐏𝐎𝐑𝐀𝐓𝐈𝐎𝐍 𝐎𝐅 𝐓𝐄𝐋𝐀𝐍𝐆𝐀𝐍𝐀 𝐋𝐈𝐌𝐈𝐓𝐄𝐃
+                𝐓𝐑𝐀𝐍𝐒𝐌𝐈𝐒𝐒𝐈𝐎𝐍 𝐂𝐎𝐑𝐏𝐎𝐑𝐀𝐓𝐈𝐎𝐍 𝐎𝐅 𝐓𝐄𝐋𝐀𝐍𝐆𝐀𝐍𝐀 𝐋𝐈𝐌𝐈𝐓𝐄𝐃
             </h1>
         </div>
         <div class="hamburger" id="hamburger">
@@ -60,7 +121,7 @@
         <div class="table-container">
             <table id="dataTable">
                 <h2 style="display: none;" id="tableHeading">
-                    EHT Line Trippings/Breakdown from ${formattedFromDate} to ${formattedToDate} Shankarpally Division
+                    EHT Line Trippings/Breakdown from [Start Date] to [End Date] Shankarpally Division
                 </h2>
                 <thead>
                     <tr>
@@ -85,8 +146,19 @@
         </div>
     </div>
 
+    <!-- WhatsApp Floating Button -->
+    <div class="whatsapp-float" id="whatsappFloat">
+        <div class="whatsapp-btn" id="whatsappBtn">
+            <i class="fab fa-whatsapp fa-2x" style="color: white;"></i>
+        </div>
+        <div class="whatsapp-options" id="whatsappOptions">
+            <a class="whatsapp-option" id="sharePdf">Share PDF</a>
+            <a class="whatsapp-option" id="shareExcel">Share Excel</a>
+        </div>
+    </div>
+
     <footer class="footer">
-        <p>&copy; 2025 Transimission Corporation of Telangana Limited All rights reserved.</p>
+        <p>© 2025 Transmission Corporation of Telangana Limited All rights reserved.</p>
     </footer>
 
     <script>
@@ -105,31 +177,33 @@
             "132/33KVSS Sriranga Puram": ["132 KV Shadnagar", "132 KV Scan Energy"]
         };
 
+        let selectedFromDate = '';
+        let selectedToDate = '';
+        let tableData = [];
+
         document.getElementById('dateForm').addEventListener('submit', async (event) => {
             event.preventDefault();
 
-            const fromDate = document.getElementById('fromDate').value;
-            const toDate = document.getElementById('toDate').value;
+            selectedFromDate = document.getElementById('fromDate').value;
+            selectedToDate = document.getElementById('toDate').value;
             const messageDiv = document.getElementById('message');
             const loadingSpinner = document.getElementById('loadingSpinner');
             const buttonContainer = document.getElementById('buttonContainer');
 
-            // Format the dates for the heading
-            const formattedFromDate = formatDate(fromDate);
-            const formattedToDate = formatDate(toDate);
+            const formattedFromDate = formatDate(selectedFromDate);
+            const formattedToDate = formatDate(selectedToDate);
 
             const tableBody = document.querySelector('#dataTable tbody');
-            tableBody.innerHTML = ''; // Clear existing data
-            messageDiv.textContent = ''; // Clear message
+            tableBody.innerHTML = '';
+            messageDiv.textContent = '';
             const tableHeading = document.getElementById('tableHeading');
             tableHeading.textContent = `EHT Line Trippings/Breakdown from ${formattedFromDate} to ${formattedToDate} Shankarpally Division`;
             tableHeading.style.display = 'block';
 
-            // Show the loading spinner
             loadingSpinner.style.display = 'block';
 
             try {
-                const response = await fetch(`/fetch-data?fromDate=${fromDate}&toDate=${toDate}`);
+                const response = await fetch(`/fetch-data?fromDate=${selectedFromDate}&toDate=${selectedToDate}`);
                 const data = await response.json();
 
                 const incidentsMap = new Map();
@@ -143,31 +217,21 @@
 
                 const formatDateTime = (dateString) => {
                     const date = new Date(dateString);
-                    const formattedDate = date.toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                    });
-                    const formattedTime = date.toLocaleTimeString('en-GB', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                    });
+                    const formattedDate = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    const formattedTime = date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                     return `${formattedDate}, ${formattedTime}`;
                 };
 
                 let serialNo = 1;
+                tableData = [];
 
                 Object.keys(allSubstations).forEach((substation) => {
                     allSubstations[substation].forEach((feeder) => {
                         const key = `${substation}-${feeder}`;
                         const incidents = incidentsMap.get(key) || [];
-
-                        // Sort incidents by trippingDate (ascending order)
                         incidents.sort((a, b) => new Date(a.trippingDate) - new Date(b.trippingDate));
 
                         if (incidents.length === 0) {
-                            // Display "No data found" message
                             const row = document.createElement('tr');
                             row.innerHTML = `
                                 <td>${serialNo++}</td>
@@ -176,8 +240,21 @@
                                 <td colspan="10" class="no-data-found">No data found for ${substation} - ${feeder}</td>
                             `;
                             tableBody.appendChild(row);
+                            tableData.push({
+                                "S.No": serialNo - 1,
+                                "Substation Name": substation,
+                                "Feeder Name": feeder,
+                                "Feeder Type": "",
+                                "Tripping Date and Time": "No data found",
+                                "Charge/Test Charge Date and Time": "",
+                                "Duration of Interruption": "",
+                                "Tripping Indications at Both Ends": "",
+                                "Whether Breakdown Declared": "",
+                                "Fault Identified in Patrolling": "",
+                                "Fault Location": "",
+                                "Remarks and Action Taken for Rectification": ""
+                            });
                         } else {
-                            // Display incidents
                             incidents.forEach((incident) => {
                                 const incidentRow = document.createElement('tr');
                                 incidentRow.innerHTML = `
@@ -195,24 +272,37 @@
                                     <td>${incident.remarks}</td>
                                 `;
                                 tableBody.appendChild(incidentRow);
+                                tableData.push({
+                                    "S.No": serialNo - 1,
+                                    "Substation Name": incident.substationName,
+                                    "Feeder Name": incident.feederName,
+                                    "Feeder Type": incident.feederType,
+                                    "Tripping Date and Time": formatDateTime(incident.trippingDate),
+                                    "Charge/Test Charge Date and Time": formatDateTime(incident.chargeDate),
+                                    "Duration of Interruption": incident.duration,
+                                    "Tripping Indications at Both Ends": incident.trippingIndications,
+                                    "Whether Breakdown Declared": incident.breakdownDeclared,
+                                    "Fault Identified in Patrolling": incident.faultIdentified,
+                                    "Fault Location": incident.faultLocation,
+                                    "Remarks and Action Taken for Rectification": incident.remarks
+                                });
                             });
                         }
                     });
                 });
 
-                // Show the download buttons after data is loaded
                 buttonContainer.style.display = 'flex';
+                showWhatsAppButton();
 
             } catch (error) {
                 console.error('Error fetching data:', error);
                 messageDiv.textContent = 'Error fetching data. Please try again later.';
+                hideWhatsAppButton();
             } finally {
-                // Hide the loading spinner
                 loadingSpinner.style.display = 'none';
             }
         });
 
-        // Function to update header title based on screen size
         function updateHeaderTitle() {
             const headerTitle = document.getElementById('header-title');
             const isMobile = window.innerWidth <= 768;
@@ -221,22 +311,22 @@
                 : headerTitle.getAttribute('data-desktop');
         }
 
-        // Initial call to set the header title
-        updateHeaderTitle();
+        window.addEventListener('load', updateHeaderTitle);
+        window.addEventListener('resize', () => {
+            updateHeaderTitle();
+            if (!isMobileView()) {
+                hideWhatsAppButton();
+            } else if (tableData.length > 0) {
+                showWhatsAppButton();
+            }
+        });
 
-        // Update header title on window resize
-        window.addEventListener('resize', updateHeaderTitle);
-
-        // Hamburger Menu Toggle
         const hamburger = document.getElementById('hamburger');
         const navbarOverlay = document.getElementById('navbarOverlay');
-
         hamburger.addEventListener('click', () => {
             hamburger.classList.toggle('active');
             navbarOverlay.classList.toggle('active');
         });
-
-        // Close overlay when clicking a menu item
         navbarOverlay.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 hamburger.classList.remove('active');
@@ -244,56 +334,12 @@
             });
         });
 
-        // Your existing downloadExcel function remains unchanged
         function downloadExcel() {
             const { XLSX } = window;
-
-            // Get the selected dates
-            const fromDate = document.getElementById('fromDate').value;
-            const toDate = document.getElementById('toDate').value;
-
-            // Format the dates for the heading
-            const formattedFromDate = formatDate(fromDate);
-            const formattedToDate = formatDate(toDate);
-
-            // Create a heading for the Excel file
+            const formattedFromDate = formatDate(selectedFromDate);
+            const formattedToDate = formatDate(selectedToDate);
             const heading = `EHT Line Trippings/Breakdown from ${formattedFromDate} to ${formattedToDate} Shankarpally Division`;
-
-            // Prepare the data including the heading
-            const table = document.getElementById('dataTable');
-            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-            const data = [];
-            let serialNumber = 1;
-
-            for (let row of rows) {
-                const cells = row.getElementsByTagName('td');
-                
-                // Ensure there are enough cells in the row
-                if (cells.length === 12) {
-                    data.push({
-                        "S.No": serialNumber++,
-                        "Substation Name": cells[1]?.textContent || '',
-                        "Feeder Name": cells[2]?.textContent || '',
-                        "Feeder Type": cells[3]?.textContent || '',
-                        "Tripping Date and Time": cells[4]?.textContent || '',
-                        "Charge/Test Charge Date and Time": cells[5]?.textContent || '',
-                        "Duration of Interruption": cells[6]?.textContent || '',
-                        "Tripping Indications at Both Ends": cells[7]?.textContent || '',
-                        "Whether Breakdown Declared": cells[8]?.textContent || '',
-                        "Fault Identified in Patrolling": cells[9]?.textContent || '',
-                        "Fault Location": cells[10]?.textContent || '',
-                        "Remarks and Action Taken for Rectification": cells[11]?.textContent || ''
-                    });
-                } else {
-                    console.warn('Row has unexpected number of cells:', cells.length);
-                }
-            }
-
-            // Create a new workbook
-            const wb = XLSX.utils.book_new();
-
-            // Create a worksheet with the data
-            const ws = XLSX.utils.json_to_sheet(data, {
+            const ws = XLSX.utils.json_to_sheet(tableData, {
                 header: [
                     "S.No",
                     "Substation Name",
@@ -309,16 +355,11 @@
                     "Remarks and Action Taken for Rectification"
                 ]
             });
-
-            // Create a new sheet with the heading
+            const wb = XLSX.utils.book_new();
             const wsWithHeading = XLSX.utils.book_new();
             XLSX.utils.sheet_add_aoa(wsWithHeading, [[heading]], { origin: "A1" });
-
-            // Append data below the heading
             const dataRange = XLSX.utils.sheet_to_json(ws, { header: 1 });
             XLSX.utils.sheet_add_aoa(wsWithHeading, dataRange, { origin: "A3" });
-
-            // Adjust column widths (optional)
             wsWithHeading['!cols'] = [
                 { width: 10 },
                 { width: 30 },
@@ -333,134 +374,169 @@
                 { width: 20 },
                 { width: 40 }
             ];
-
-            // Append the worksheet to the workbook
-            XLSX.utils.book_append_sheet(wb, wsWithHeading, "Interruptions");
-
-            // Save the workbook
-            XLSX.writeFile(wb, "Interruptions.xlsx");
+            XLSX.utils.book_append_sheet(wb, wsWithHeading, "Trippings");
+            XLSX.writeFile(wb, "EHT_Trippings.xlsx");
         }
 
-        // Your existing formatDate function remains unchanged
+        document.getElementById('printTable').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape' });
+            const formattedFromDate = formatDate(selectedFromDate);
+            const formattedToDate = formatDate(selectedToDate);
+            doc.setFontSize(16);
+            doc.text('TRANSMISSION CORPORATION OF TELANGANA LIMITED', 148, 20, { align: 'center' });
+            doc.setFontSize(12);
+            doc.text(`EHT Line Trippings/Breakdowns from ${formattedFromDate} to ${formattedToDate} in Shankarpally Division`, 148, 30, { align: 'center' });
+            doc.addImage('logo_new.png', 'PNG', 10, 10, 24, 24);
+            doc.setFontSize(8);
+            doc.text('Generated on: ' + new Date().toLocaleString(), 280, 40, { align: 'right' });
+            doc.autoTable({
+                html: '#dataTable',
+                startY: 50,
+                styles: { fontSize: 8, cellPadding: 2 },
+                headStyles: { fillColor: [0, 123, 255], textColor: [255, 255, 255] },
+                alternateRowStyles: { fillColor: [240, 240, 240] },
+            });
+            doc.save('EHT_Trippings.pdf');
+        });
+
         function formatDate(dateString) {
             const date = new Date(dateString);
-            return date.toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
+            return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
         }
 
-        // Your existing printTable event listener remains unchanged
-        document.getElementById('printTable').addEventListener('click', () => {
-            const table = document.getElementById('dataTable');
-
-            // Get date values from input fields
-            const fromDate = document.getElementById('fromDate').value;
-            const toDate = document.getElementById('toDate').value;
-
-            // Function to format date to DD-MM-YYYY
-            function formatDate(dateString) {
-                const [year, month, day] = dateString.split('-');
-                return `${day}-${month}-${year}`;
-            }
-
-            // Format the dates
-            const formattedFromDate = formatDate(fromDate);
-            const formattedToDate = formatDate(toDate);
-
-            // Create a new window or tab
-            const printWindow = window.open('', '', 'height=600,width=800');
-
-            // Define your logo URL and header content
-            const logoURL = 'logo_new.png';
-            const headerContent = `
-                <header>
-                    <div class="header-content">
-                        <img src="${logoURL}" alt="Logo">
-                        <h1>TRANSMISSION CORPORATION OF TELANGANA LIMITED</h1>
-                    </div>
-                </header>
-                <h2 style="text-align: center; margin: 20px 0;">
-                    EHT Line Trippings/Breakdowns from ${formattedFromDate} to ${formattedToDate} in Shankarpally Division
-                </h2>
-            `;
-
-            // Add some styles for the print
-            const styles = `
-                <style>
-                    @media print {
-                        @page {
-                            size: landscape;
-                            margin: 25mm;
-                        }
-                        body {
-                            font-family: Arial, sans-serif;
-                            margin: 0;
-                        }
-                        header {
-                            margin-bottom: 20px;
-                        }
-                        .header-content {
-                            display: flex;
-                            align-items: center;
-                            border-bottom: 2px solid #ddd;
-                            padding-bottom: 10px;
-                        }
-                        .header-content img {
-                            max-width: 150px;
-                            height: auto;
-                            margin-right: 20px;
-                        }
-                        .header-content h1 {
-                            margin: 0;
-                            font-size: 35px;
-                        }
-                        h2 {
-                            margin: 0;
-                            font-size: 20px;
-                        }
-                        table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            font-size: 16px;
-                            background: #f5f5f5;
-                        }
-                        th, td {
-                            padding: 12px;
-                            border: 1px solid #333 !important;
-                        }
-                        th {
-                            background-color: #007bff !important;
-                            color: #000000 !important;
-                        }
-                        tr:nth-child(even) {
-                            background-color: #e0e0e0;
-                        }
-                        tr:hover {
-                            background-color: #c8e6c9;
-                        }
-                    }
-                </style>
-            `;
-
-            // Write the HTML for the new window
-            printWindow.document.write('<html><head><title>EHT Trippings</title>');
-            printWindow.document.write(styles);
-            printWindow.document.write('</head><body>');
-            printWindow.document.write(headerContent);
-            printWindow.document.write(table.outerHTML);
-            printWindow.document.write('</body></html>');
-
-            // Close the document to finish writing
-            printWindow.document.close();
-            
-            // Wait for the content to be loaded and then print
-            printWindow.onload = () => {
-                printWindow.focus();
-                printWindow.print();
-            };
+        // WhatsApp Functionality
+        document.getElementById('whatsappBtn').addEventListener('click', () => {
+            toggleWhatsAppOptions(true);
         });
+
+        document.addEventListener('click', (event) => {
+            const whatsappFloat = document.getElementById('whatsappFloat');
+            const whatsappOptions = document.getElementById('whatsappOptions');
+            if (!whatsappFloat.contains(event.target) && whatsappOptions.style.display === 'flex') {
+                toggleWhatsAppOptions(false);
+            }
+        });
+
+        document.getElementById('sharePdf').addEventListener('click', (e) => {
+            e.preventDefault();
+            generateAndSharePDF();
+        });
+
+        document.getElementById('shareExcel').addEventListener('click', (e) => {
+            e.preventDefault();
+            generateAndShareExcel();
+        });
+
+        function toggleWhatsAppOptions(show) {
+            const options = document.getElementById('whatsappOptions');
+            options.style.display = show ? 'flex' : 'none';
+        }
+
+        function isMobileView() {
+            return window.innerWidth <= 768;
+        }
+
+        function showWhatsAppButton() {
+            const whatsappFloat = document.getElementById('whatsappFloat');
+            if (isMobileView() && tableData.length > 0) {
+                whatsappFloat.style.display = 'block';
+            }
+        }
+
+        function hideWhatsAppButton() {
+            const whatsappFloat = document.getElementById('whatsappFloat');
+            whatsappFloat.style.display = 'none';
+            toggleWhatsAppOptions(false);
+        }
+
+        function generateAndSharePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape' });
+            const formattedFromDate = formatDate(selectedFromDate);
+            const formattedToDate = formatDate(selectedToDate);
+            doc.setFontSize(16);
+            doc.text('TRANSMISSION CORPORATION OF TELANGANA LIMITED', 148, 20, { align: 'center' });
+            doc.setFontSize(12);
+            doc.text(`EHT Line Trippings/Breakdowns from ${formattedFromDate} to ${formattedToDate} in Shankarpally Division`, 148, 30, { align: 'center' });
+            doc.addImage('logo_new.png', 'PNG', 10, 10, 24, 24);
+            doc.setFontSize(8);
+            doc.text('Generated on: ' + new Date().toLocaleString(), 280, 40, { align: 'right' });
+            doc.autoTable({
+                html: '#dataTable',
+                startY: 50,
+                styles: { fontSize: 8, cellPadding: 2 },
+                headStyles: { fillColor: [0, 123, 255], textColor: [255, 255, 255] },
+                alternateRowStyles: { fillColor: [240, 240, 240] },
+            });
+            const pdfBlob = doc.output('blob');
+            const file = new File([pdfBlob], 'EHT_Trippings.pdf', { type: 'application/pdf' });
+            shareViaWhatsApp(file);
+        }
+
+        function generateAndShareExcel() {
+            const { XLSX } = window;
+            const formattedFromDate = formatDate(selectedFromDate);
+            const formattedToDate = formatDate(selectedToDate);
+            const heading = `EHT Line Trippings/Breakdown from ${formattedFromDate} to ${formattedToDate} Shankarpally Division`;
+            const ws = XLSX.utils.json_to_sheet(tableData, {
+                header: [
+                    "S.No",
+                    "Substation Name",
+                    "Feeder Name",
+                    "Feeder Type",
+                    "Tripping Date and Time",
+                    "Charge/Test Charge Date and Time",
+                    "Duration of Interruption",
+                    "Tripping Indications at Both Ends",
+                    "Whether Breakdown Declared",
+                    "Fault Identified in Patrolling",
+                    "Fault Location",
+                    "Remarks and Action Taken for Rectification"
+                ]
+            });
+            const wb = XLSX.utils.book_new();
+            const wsWithHeading = XLSX.utils.book_new();
+            XLSX.utils.sheet_add_aoa(wsWithHeading, [[heading]], { origin: "A1" });
+            const dataRange = XLSX.utils.sheet_to_json(ws, { header: 1 });
+            XLSX.utils.sheet_add_aoa(wsWithHeading, dataRange, { origin: "A3" });
+            wsWithHeading['!cols'] = [
+                { width: 10 },
+                { width: 30 },
+                { width: 35 },
+                { width: 20 },
+                { width: 30 },
+                { width: 30 },
+                { width: 20 },
+                { width: 30 },
+                { width: 25 },
+                { width: 30 },
+                { width: 20 },
+                { width: 40 }
+            ];
+            XLSX.utils.book_append_sheet(wb, wsWithHeading, "Trippings");
+            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const file = new File([excelBlob], 'EHT_Trippings.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            shareViaWhatsApp(file);
+        }
+
+        function shareViaWhatsApp(file) {
+            if (navigator.share && isMobileView()) {
+                navigator.share({
+                    files: [file],
+                    title: `EHT Trippings Report`,
+                    text: `Trippings data from ${formatDate(selectedFromDate)} to ${formatDate(selectedToDate)}`
+                })
+                .then(() => toggleWhatsAppOptions(false))
+                .catch(error => {
+                    console.error('Error sharing:', error);
+                    alert('Error sharing file. Please try again.');
+                });
+            } else {
+                alert('Web Share API not supported on this device/browser.');
+            }
+        }
     </script>
 </body>
 </html>
