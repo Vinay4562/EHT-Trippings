@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const MongoStore = require('connect-mongo');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 const morgan = require('morgan');
@@ -47,8 +48,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     secret: process.env.SESSION_SECRET || 'chantichanti2255',
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }
+    saveUninitialized: false, // Set to false to avoid creating empty sessions
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+    cookie: {
+        secure: false, // Set to true in production with HTTPS
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
 }));
 
 const loginLimiter = rateLimit({
@@ -101,9 +106,11 @@ const substations = {
 
 // Middleware to check if the user is authenticated
 function ensureAuthenticated(req, res, next) {
+    console.log('Session:', req.session);
     if (req.session && req.session.authenticated && req.session.substationName) {
         return next();
     } else {
+        console.log('Authentication failed, redirecting to login');
         res.clearCookie('connect.sid');
         return res.redirect('/login.html');
     }
@@ -127,7 +134,6 @@ app.use((req, res, next) => {
 // Endpoint to handle login
 app.post('/login', loginLimiter, (req, res) => {
     const { username, password } = req.body;
-
     let authenticatedSubstation = null;
 
     for (const [substation, creds] of Object.entries(credentials)) {
@@ -140,7 +146,13 @@ app.post('/login', loginLimiter, (req, res) => {
     if (authenticatedSubstation) {
         req.session.authenticated = true;
         req.session.substationName = authenticatedSubstation;
-        res.redirect('/trippings.html');
+        req.session.save(err => { // Ensure session is saved before responding
+            if (err) {
+                console.error('Session save error:', err);
+                return res.status(500).send('Session error');
+            }
+            res.json({ success: true, redirect: '/trippings.html' });
+        });
     } else {
         res.status(401).send('Unauthorized');
     }
@@ -288,7 +300,7 @@ app.get('/current-substation', ensureAuthenticated, (req, res) => {
         const feeders = substations[substation] || [];
         res.json({ substation, feeders });
     } else {
-        res.status(404).send('Substation not found');
+        res.status(401).json({ error: 'Not authenticated' });
     }
 });
 

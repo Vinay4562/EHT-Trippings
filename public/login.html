@@ -391,31 +391,26 @@
 
             loginForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
-
                 const username = document.getElementById('username').value;
                 const password = passwordField.value;
 
                 try {
                     const response = await fetch('/login', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ username, password })
                     });
 
                     if (response.ok) {
-                        // Reset the credentials in the form fields
+                        const data = await response.json();
                         document.getElementById('username').value = '';
                         document.getElementById('password').value = '';
-
                         successMessageDiv.textContent = 'Login successful!';
                         setTimeout(() => {
-                            window.location.href = 'trippings.html';
+                            window.location.href = data.redirect;
                         }, 1000);
                     } else {
-                        const message = await response.text();
-                        errorMessageDiv.textContent = 'Login failed: ' + message;
+                        errorMessageDiv.textContent = 'Login failed: ' + await response.text();
                     }
                 } catch (error) {
                     errorMessageDiv.textContent = 'Error: ' + error.message;
